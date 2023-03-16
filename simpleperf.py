@@ -22,11 +22,19 @@ def handle_client(conn,addr,format):# funksjon for å behandle klienter og måle
 
     start_time = time.time()# vi kaller funksjonen time.time(),for å få nåtidi sekunder
     antall_bytes = 0# Denne variabelen kommer vi til å bruke for telle antall bytes som blir mottatt
-    connected =True
-    while connected: # løkken fortsetter å motta data intil det ikke er mer data igjen
-        data = conn.recv(1000) # 1000 bytes av data blir mottatt fra tilkoblingen og lagres i variabelen data
+    
+    while True: # løkken fortsetter å motta data intil det ikke er mer data igjen
+        data = conn.recv(1000).decode() # 1000 bytes av data blir mottatt fra tilkoblingen og lagres i variabelen data
+
+        ####print test
+        print(f"Data recieved from {addr}:{data}")
+
         if not data: # ikke mer data
+
+            ##print test
+            print("No more data from client, closing connection")
             break    # Avslutt løkken
+           
        
         antall_bytes += len(data) # antall bytes økes med lengden av data som ble mottatt
         end_time  = time.time()# kaller igjen metode time.time() for å se tiden etter at data er mottatt
@@ -46,6 +54,7 @@ def handle_client(conn,addr,format):# funksjon for å behandle klienter og måle
             
         
         conn.sendall(b"ACK")# sender bekreftelsesmelding til klienten
+        print("ACK sent to client")
     conn.close()# lukker tilkobling med klienten
 
 def server(ip,port,format)  : # Dette er funksjon for å kjøre serveren
@@ -63,7 +72,7 @@ def server(ip,port,format)  : # Dette er funksjon for å kjøre serveren
     while True:
         conn,addr = sock.accept()# Sett opp ny tikobling fra client. addr:inneholder ip-adresse og portnummeret til klienten
 
-        
+       
         print("-" * 45)
         print("A simpleperf client with {}:{} is connected with {}:{}".format(addr[0],addr[1],ip,port))#
         print("-" * 45)
@@ -88,6 +97,9 @@ def client(server_ip, port, duration):# Dette er funksjon for å kjøre client
         if elapsed_time >= duration:# dersom medgått tid er større enn duration
             break # Løkken avbrytes
     sock.sendall(b"FINISH")# client sender bye medling
+
+    print("Finish message sent to server")
+
     sock.recv(1024)# client tar imot respons fra server på opp til 1024 byte
     end_time = time.time()# tidspunkt når client er ferdig
     duration = end_time - start_time # tiden det tok for client å kjøre/ end_time= nåværende tidspunkt
