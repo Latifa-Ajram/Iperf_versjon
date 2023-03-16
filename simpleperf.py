@@ -94,7 +94,7 @@ def client(server_ip, port, duration):# Dette er funksjon for å kjøre client
     bandwidth = total_bytes / duration * 8 / 1000000# bandwidth-variabel beregner båndbredden som client har oppnådd,ved å dele antall byte på tid, vi ganger med 8 for å omgjøre til bps, og dele på 10^6 for å få Mbps
     print("Client connected with server {},port{}".format(server_ip,port))
     print("ID Interval Transfer Bandwidth")
-    print("{} 0.0 - {:.1f} {:.0f} {}bps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]), duration, total_bytes/1000000, bandwidth))
+    print("{} 0.0 - {:.1f} {:.0f} {}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]), duration, total_bytes/1000000, bandwidth))
     #Dette er resultat av testen, 
 
 if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjøres, og koden inne i blokken, er det den som skal kjøres. Linjen er brukt for å kjøre koden
