@@ -14,6 +14,15 @@ def check_port(val):
         print('it is not a valid port')
         sys.exit()
     return value
+def check_parallel(val):
+    try:
+        value = int(val)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{value} is an invalid parallel value.choose value between 1 and 5")
+    if not(1 <=value <= 5 ):
+        print('it is not a valid parallelvalue')
+
+    return value
 
 def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndbredde
       
@@ -103,7 +112,7 @@ def server(ip,port)  : # Dette er funksjon for å kjøre serveren
       
 
 
-def client(serverip, port, duration):# Dette er funksjon for å kjøre client
+def client(serverip, port, duration,paralell):# Dette er funksjon for å kjøre client
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #oppretter ny socket objekt, ved brukt av IPV4-protokoll og TCP protokoll
     sock.connect((serverip, port))# client kobles til server
@@ -119,7 +128,7 @@ def client(serverip, port, duration):# Dette er funksjon for å kjøre client
             sock.sendall(b"FINISH")# client sender bye medling
             break # Løkken avbrytes
     
-        ###### her må det endres noe
+      
 
 
     
@@ -127,6 +136,10 @@ def client(serverip, port, duration):# Dette er funksjon for å kjøre client
     end_time = time.time()# tidspunkt når client er ferdig
     duration = end_time - start_time # tiden det tok for client å kjøre/ end_time= nåværende tidspunkt
     bandwidth = total_bytes / duration * 8 / 1000000# bandwidth-variabel beregner båndbredden som client har oppnådd,ved å dele antall byte på tid, vi ganger med 8 for å omgjøre til bps, og dele på 10^6 for å få Mbps
+    if interval:
+        for duration in range(0,5):
+            
+
     print("Client connected with server {},port{}".format(serverip,port))
     print("ID Interval Transfer Bandwidth")
     print("{} 0.0 - {:.1f} {:.0f} {:.2f}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]), duration, total_bytes/1000000, bandwidth))
@@ -151,20 +164,32 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
     parser.add_argument('-f','--format',type=str,default='MB',help='choose the format of the summary of results KB or MB')
     parser.add_argument('-t','--time',type= int,default=25,help='the total duration in seconds for which data should be generated and sent to the server and must be >0')
     parser.add_argument('-P','--parallel',type=int,default=1,help='creates parallel connections to cennect to the server and send data - it must be 2 and the max value should be 5-')
+    #parser.add_argument('-P','--parallel',type=check_parallel, default = 1,help='creates parallel connections to cennect to the server and send data - it must be 2 and the max value should be 5-')
     
     parser.add_argument('-n','--num',type=str,help='transfer number of bytes specified by -n falg,it should be either in B,KB or MB')
     #-i angir intervallet mellom h
     parser.add_argument('-i','--interval',type=int,help='print statistics per z second')
     #kjøre parseren og hente ut argumentene fra sys.argv
     args = parser.parse_args()
-    if args.interval:
+    interval= args.interval
+    if interval:
         print("Hei")
     port = args.port # henter portnummer fra argumentene som er sendt inn via kommandolinejen
     serverip =args.serverip
     duration=args.time
+    paralell=args.parallel
     if args.server:# basert på dette kaller vi funksjon server()
         server (args.bind,port)
     elif args.client:# basert på dette kaller vi funksjon client()
-        client(args.serverip,port,args.time)
-   
+        
+        if paralell in range (1,5):
+            for i in (1,paralell+2):
+                client(args.serverip,port,duration,paralell)
+        else:
+            client(args.serverip,port,duration,paralell)
+           
+
+        
+            
+
     
