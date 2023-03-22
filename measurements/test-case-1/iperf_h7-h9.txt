@@ -1,0 +1,6 @@
+Bndwith: 17,5 MB/s 
+Jitter: 0.6ms
+Lost:2896
+Total Datagrams: 17836
+
+
