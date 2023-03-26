@@ -1,3 +1,4 @@
+import ipaddress
 import socket
 import argparse
 import time
@@ -25,6 +26,12 @@ def check_time(val):
         print('it is not a valid time')
         sys.exit
     return value 
+def check_ip(address):# sjekker om adress er valid IPv4 address
+    try:
+       val = ipaddress.ip_address(address)
+       print(f"The IP address {val} is valid.")
+    except ValueError:
+       print(f"The IP address is {address} not valid")
 def check_parallel(val):
     try:
         value = int(val)
@@ -54,7 +61,7 @@ def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndb
         if  data.decode() == "FINISH" : # ikke mer data
 
             ##print test
-            print("No more data from client, closing connection")
+           # print("No more data from client, closing connection")
             break    # Avslutt løkken
            
        
@@ -188,16 +195,18 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
         
        # print("Hei")
     port = args.port # henter portnummer fra argumentene som er sendt inn via kommandolinejen
-    #ip=args.bind
+    ip=args.bind
     serverip =args.serverip
     duration=args.time
     parallel=args.parallel
-    #format= args.format
+
+   
     if args.server:# basert på dette kaller vi funksjon server()
-        server (args.bind,port)
+        check_ip(ip)
+        server (ip,port)
     elif args.client:# basert på dette kaller vi funksjon client()
         #client(args.serverip,port,duration,parallel,interval) 
-         client(args.serverip,port,duration)
+         client(serverip,port,duration)
         #if parallel in range(1, 6):
             #for i in range(1, parallel):
                 #client(args.serverip, port, duration, i)
