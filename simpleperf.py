@@ -57,11 +57,11 @@ def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndb
             data = conn.recv(1000) # 1000 bytes av data blir mottatt fra tilkoblingen og lagres i variabelen data
         except:
             break
-    
+        print(data)
         if  data.decode() == "FINISH" : # ikke mer data
 
             ##print test
-           # print("No more data from client, closing connection")
+            #print("No more data from client, closing connection")
             break    # Avslutt løkken
            
        
@@ -190,7 +190,7 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
     parser.add_argument('-i','--interval',type= check_time,help='print statistics per z second')
     #kjøre parseren og hente ut argumentene fra sys.argv
     args = parser.parse_args()
-    interval= args.interval
+    #interval= args.interval
     #if interval:
         
        # print("Hei")
