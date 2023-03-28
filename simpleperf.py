@@ -57,11 +57,10 @@ def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndb
             data = conn.recv(1000) # 1000 bytes av data blir mottatt fra tilkoblingen og lagres i variabelen data
         except:
             break
-        print(data)
+       
         if  data.decode() == "FINISH" : # ikke mer data
 
-            ##print test
-            #print("No more data from client, closing connection")
+            
             break    # Avslutt løkken
            
        
@@ -85,19 +84,18 @@ def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndb
         try:
             conn.send("ACK".encode())# sender bekreftelsesmelding til klienten
         except:
-            #print("Det er noe feil" ,{data})
-            #time.sleep(2)
+            
             conn.close()
-        #print("ACK sent to client")
+       
 
 
     # Dette er overskrift til 4 kolonner , innholdet i disse kommer ut av neste linje  som er info om data som er overført mellom client og server
     print("ID\t\tInterval\t\tReceived\t\tRate")        #print("{} 0.0 - {:.1f} {:.0f} {:.2f}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]), duration, total_bytes/1000000, bandwidth))
     print("{}:{}\t0.0 - {:.1f}\t\t{:.0f} MB\t\t{:.2f} Mbps".format(addr[0], addr[1], duration, antall_bytes/1000000, bandwidth))# her bruker vi format-metoden for å vise tid som
                     #er brukt på overføring av data, antall bytes som overføres,bandwidth. addr variabel skal ha IP-adresse og portnummer til klienten som er tilkoblet.                                              
-                                              # vi deler på 10^6 for å konvertere fra bytes per sekund (b/s) til megabit per sekund(Mbps), 1 megabit= 10^6 bits.      
-        
-    
+                                              # vi deler på 10^6 for å konvertere fra bytes per sekund (b/s) til megabit per sekund(Mbps), 1 megabit= 10^6 bits.   
+
+   
     conn.close()# lukker tilkobling med klienten
 
 def server(ip,port)  : # Dette er funksjon for å kjøre serveren
@@ -135,7 +133,7 @@ def client(serverip, port, duration):# Dette er funksjon for å kjøre client
         sock.send(data.encode())# sender datapakker
         total_bytes += len(data) # vi oppdaterer antall byte for hver pakke som blir sendt
         elapsed_time = time.time() - start_time # variabelen inneholder tiden som har gått siden client startet og sende datapakker
-       
+        #print(elapsed_time)
        
         #if interval:    
            # if math.floor(elapsed_time) % interval == 0:
@@ -152,7 +150,7 @@ def client(serverip, port, duration):# Dette er funksjon for å kjøre client
             sock.send("FINISH".encode())# client sender bye medling
             break # Løkken avbrytes
     
-    sock.recv(1000).decode()# client tar imot respons (Acknowlegement) fra server på opp til 10 byte
+        sock.recv(1000).decode()# client tar imot respons (Acknowlegement) fra server på opp til 10 byte
     end_time = time.time()# tidspunkt når client er ferdig
     duration = end_time - start_time # tiden det tok for client å kjøre/ end_time= nåværende tidspunkt
     #prøv å telle antallbyte her og se forskjellen
@@ -161,7 +159,6 @@ def client(serverip, port, duration):# Dette er funksjon for å kjøre client
     print("Client connected with server {},port{}".format(serverip,port))
     print("ID\t\tInterval\t\tTransfer\t\tBandwidth")
     print("{}:{}\t0.0 - {:.1f}\t\t{:.0f} MB\t\t{:.2f} Mbps".format(sock.getsockname()[0], sock.getsockname()[1], duration, total_bytes/1000000, bandwidth))
-        #Dette er resultat av testen, 
         
 
 if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjøres, og koden inne i blokken, er det den som skal kjøres. Linjen er brukt for å kjøre koden
@@ -181,7 +178,7 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
     parser.add_argument('-I', '--serverip', type=str, default='127.0.0.1', help='IP address of the server')
     parser.add_argument('-p','--port',type=check_port,default=8088,help='Port number on which the server should listen or the client should connect')
     parser.add_argument('-f','--format',type=str,default='MB',help='choose the format of the summary of results KB or MB')
-    parser.add_argument('-t','--time',type= int,default=25,help='the total duration in seconds for which data should be generated and sent to the server and must be >0')
+    parser.add_argument('-t','--time',type=int, default=25,help='the total duration in seconds for which data should be generated and sent to the server and must be >0')
     parser.add_argument('-P','--parallel',type=int,default=1,help='creates parallel connections to cennect to the server and send data - it must be 2 and the max value should be 5-')
     #parser.add_argument('-P','--parallel',type=check_parallel, default = 1,help='creates parallel connections to cennect to the server and send data - it must be 2 and the max value should be 5-')
     
@@ -206,7 +203,7 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
         server (ip,port)
     elif args.client:# basert på dette kaller vi funksjon client()
         #client(args.serverip,port,duration,parallel,interval) 
-         client(serverip,port,duration)
+        client(serverip,port,duration)
         #if parallel in range(1, 6):
             #for i in range(1, parallel):
                 #client(args.serverip, port, duration, i)
