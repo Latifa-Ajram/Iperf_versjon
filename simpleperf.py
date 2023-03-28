@@ -78,7 +78,8 @@ def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndb
                 antall_bytes = antall_bytes / 1000 # Dette konverterer antall byte til kilobyte siden 1KB~= 1000Byte/ 1024 byte
             elif format == "MB":# hvis vi ønsker å representere bW i MB/s
                 antall_bytes = antall_bytes / 1000000#Dette konverterer antall byte til megabyte siden 1MB~= 1000000Byte/1048576byte
-            bandwidth = (antall_bytes / 1000000)/ duration  #      
+            #bandwidth = (antall_bytes / 1000000)/ duration  # 
+            bandwidth = antall_bytes /duration * 8 /1000000      
         
         
         try:
@@ -154,8 +155,8 @@ def client(serverip, port, duration):# Dette er funksjon for å kjøre client
     end_time = time.time()# tidspunkt når client er ferdig
     duration = end_time - start_time # tiden det tok for client å kjøre/ end_time= nåværende tidspunkt
     #prøv å telle antallbyte her og se forskjellen
-    bandwidth = (total_bytes / 1000000)/ duration # bandwidth-variabel beregner båndbredden som client har oppnådd,ved å dele antall byte på tid, vi ganger med 8 for å omgjøre til bps, og dele på 10^6 for å få Mbps
-    
+    #bandwidth = (total_bytes / 1000000)/ duration # bandwidth-variabel beregner båndbredden som client har oppnådd,ved å dele antall byte på tid, vi ganger med 8 for å omgjøre til bps, og dele på 10^6 for å få Mbps
+    bandwidth = (total_bytes / duration )* 8 / 1000000
     print("Client connected with server {},port{}".format(serverip,port))
     print("ID\t\tInterval\t\tTransfer\t\tBandwidth")
     print("{}:{}\t0.0 - {:.1f}\t\t{:.0f} MB\t\t{:.2f} Mbps".format(sock.getsockname()[0], sock.getsockname()[1], duration, total_bytes/1000000, bandwidth))
