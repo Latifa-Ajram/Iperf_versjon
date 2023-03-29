@@ -145,8 +145,8 @@ def client(serverip, port, format,duration,parallel):# Dette er funksjon for å 
                 
                 
         if elapsed_time >= duration:# dersom medgått tid er større enn duration
-            if data =="FINISH":
-                sock.send(data.encode())# client sender bye medling
+            
+            sock.send("FINISH".encode())# client sender bye medling
             break # Løkken avbrytes
     
         msg= sock.recv(1000).decode()# client tar imot respons (Acknowlegement) fra server på opp til 10 byte
@@ -194,7 +194,7 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
     parser.add_argument('-p','--port',type=check_port,default=8088,help='Port number on which the server should listen or the client should connect')
     parser.add_argument('-f','--format',type=str,default='MB',help='choose the format of the summary of results KB or MB')
     parser.add_argument('-t','--time',type=int, default=25,help='the total duration in seconds for which data should be generated and sent to the server and must be >0')
-    parser.add_argument('-P','--parallel',type=int,default=1,help='creates parallel connections to cennect to the server and send data - it must be 2 and the max value should be 5-')
+    parser.add_argument('-P','--parallel',type=int,default=1,help='creates parallel connections to connect to the server and send data - it must be 2 and the max value should be 5-')
     #parser.add_argument('-P','--parallel',type=check_parallel, default = 1,help='creates parallel connections to cennect to the server and send data - it must be 2 and the max value should be 5-')
     
     parser.add_argument('-n','--num',type=str,help='transfer number of bytes specified by -n falg,it should be either in B,KB or MB')
