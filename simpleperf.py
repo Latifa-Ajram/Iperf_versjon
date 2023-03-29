@@ -42,10 +42,10 @@ def check_parallel(val):
 
     return value
 
-def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndbredde
+def handle_client(conn,addr, format):# funksjon for å behandle klienter og måle båndbredde
       
     ###testprint
-    print(f"Connected by {addr}")
+    #print(f"Connected by {addr}")
 
     start_time = time.time()# vi kaller funksjonen time.time(),for å få nåtidi sekunder
     antall_bytes = 0# Denne variabelen kommer vi til å bruke for telle antall bytes som blir mottatt
@@ -72,18 +72,7 @@ def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndb
         #prøv dette for å skrive ut hver femte sek
         #if duration % 5 == 0
           #print
-        #skal jeg definere format her?
-        if duration > 0:
-            
-            if format == "KB":# hvis vi ønsker å representere bW i KB/s
-                antall_bytes = antall_bytes / 1000 # Dette konverterer antall byte til kilobyte siden 1KB~= 1000Byte/ 1024 byte
-                print(antall_bytes)
-            elif format == "MB":# hvis vi ønsker å representere bW i MB/s
-                antall_bytes = antall_bytes / 1000000#Dette konverterer antall byte til megabyte siden 1MB~= 1000000Byte/1048576byte
-            elif format == "B":
-                antall_bytes = antall_bytes    
-            #bandwidth = (antall_bytes / 1000000)/ duration  # 
-            bandwidth =( antall_bytes /duration )* 8 /1000000      
+        #skal jeg definere format her?  
         
         
         try:
@@ -93,17 +82,28 @@ def handle_client(conn,addr):# funksjon for å behandle klienter og måle båndb
             conn.close()
        
 
-
+    bandwidth =( antall_bytes /duration )* 8 /1000000 
     # Dette er overskrift til 4 kolonner , innholdet i disse kommer ut av neste linje  som er info om data som er overført mellom client og server
+    if format == "KB":# hvis vi ønsker å representere bW i KB/s
+        antall_bytes = antall_bytes / 1000 # Dette konverterer antall byte til kilobyte siden 1KB~= 1000Byte/ 1024 byte
+        print("KB BLIR BRUKT")
+                #print(antall_bytes)
+    elif format == "MB":# hvis vi ønsker å representere bW i MB/s
+        antall_bytes = antall_bytes / 1000000#Dette konverterer antall byte til megabyte siden 1MB~= 1000000Byte/1048576byte
+    elif format == "B":
+        antall_bytes = antall_bytes    
+    #bandwidth = (antall_bytes / 1000000)/ duration  # 
+      
+    
     print("ID\t\tInterval\t\tReceived\t\tRate")        #print("{} 0.0 - {:.1f} {:.0f} {:.2f}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]), duration, total_bytes/1000000, bandwidth))
-    print("{}:{}\t0.0 - {:.1f}\t\t{:.0f} MB\t\t{:.2f} Mbps".format(addr[0], addr[1], duration, antall_bytes/1000000, bandwidth))# her bruker vi format-metoden for å vise tid som
+    print("{}:{}\t0.0 - {:.1f}\t\t{:.0f} {}\t\t{:.2f} Mbps".format(addr[0], addr[1], duration, antall_bytes, format, bandwidth))# her bruker vi format-metoden for å vise tid som
                     #er brukt på overføring av data, antall bytes som overføres,bandwidth. addr variabel skal ha IP-adresse og portnummer til klienten som er tilkoblet.                                              
                                               # vi deler på 10^6 for å konvertere fra bytes per sekund (b/s) til megabit per sekund(Mbps), 1 megabit= 10^6 bits.   
 
    
     conn.close()# lukker tilkobling med klienten
 
-def server(ip,port)  : # Dette er funksjon for å kjøre serveren
+def server(ip,port,format)  : # Dette er funksjon for å kjøre serveren
 
     sock= socket.socket(socket.AF_INET,socket.SOCK_STREAM)# Oppretter TCP-server socket, AF-INET er brukt for IPV4 protokoller, SOCK_STREAM brukes som socket type
     sock.bind((ip,port)) # Vi binder socket til en spesifisert ip adresse og portnummer
@@ -119,34 +119,35 @@ def server(ip,port)  : # Dette er funksjon for å kjøre serveren
         print("-" * 45)
           
         # Oppretter ny tråd for å client connection
-        client_thread = threading.Thread(target=handle_client,args=(conn,addr))# Vi oppretter en tråd ved hjelp av target og args
+        client_thread = threading.Thread(target=handle_client,args=(conn,addr,format))# Vi oppretter en tråd ved hjelp av target og args
         client_thread.start()# Starter tråden
       
 
 
-def client(serverip, port, duration,parallel):# Dette er funksjon for å kjøre client
+def client(serverip, port, format,duration,parallel):# Dette er funksjon for å kjøre client
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #oppretter ny socket objekt, ved brukt av IPV4-protokoll og TCP protokoll
     sock.connect((serverip, port))# client kobles til server
     print("-" * 45)
     print(" A simpleperf client Client connecting to server {}, port {}".format(serverip, port))# printer ut melding
     print("-" * 45)
+    last_print_time = time.time()
     start_time = time.time() # variabelen inneholder nåværende tid når starter å koble seg til server
     total_bytes = 0 # antall byte sendt
-    last_print_time = time.time()
 
     while True: # evig loop som sender datapakker på 1000 byte
         data = "0" * 1000
         sock.send(data.encode())# sender datapakker
         total_bytes += len(data) # vi oppdaterer antall byte for hver pakke som blir sendt
-        elapsed_time = time.time() - start_time # variabelen inneholder tiden som har gått siden client startet og sende datapakker
-        #print(elapsed_time)
+        now = time.time()
+        elapsed_time = now - start_time # variabelen inneholder tiden som har gått siden client startet og sende datapakker
+        
        
         if interval:    
             #if math.floor(elapsed_time) % interval == 0:
                 bandwidth = total_bytes / duration * 8 / 1000000
                 
-                if time.time()-last_print_time >= interval:
+                if now - last_print_time >= interval:
                     print("Client connected with server {},port{}".format(serverip,port))
                     print("ID Interval Transfer Bandwidth")
                     print("{} {:.1f} - {:.1f} {:.0f} {:.2f}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]),  math.floor(elapsed_time) - interval,math.floor(elapsed_time) , total_bytes/1000000, bandwidth))
@@ -163,9 +164,18 @@ def client(serverip, port, duration,parallel):# Dette er funksjon for å kjøre 
     #prøv å telle antallbyte her og se forskjellen
     #bandwidth = (total_bytes / 1000000)/ duration # bandwidth-variabel beregner båndbredden som client har oppnådd,ved å dele antall byte på tid, vi ganger med 8 for å omgjøre til bps, og dele på 10^6 for å få Mbps
     bandwidth = (total_bytes / duration )* 8 / 1000000
+    if format == "KB":# hvis vi ønsker å representere bW i KB/s
+        total_bytes = total_bytes / 1000 # Dette konverterer antall byte til kilobyte siden 1KB~= 1000Byte/ 1024 byte
+        print("KB BLIR BRUKT")
+                #print(antall_bytes)
+    elif format == "MB":# hvis vi ønsker å representere bW i MB/s
+        total_bytes = total_bytes / 1000000#Dette konverterer antall byte til megabyte siden 1MB~= 1000000Byte/1048576byte
+    elif format == "B":
+        total_bytes= total_bytes    
+   
     print("Client connected with server {},port{}".format(serverip,port))
     print("ID\t\tInterval\t\tTransfer\tBandwidth")
-    print("{}:{}\t0.0 - {:.1f}\t\t{:.0f} MB\t\t{:.2f} Mbps".format(sock.getsockname()[0], sock.getsockname()[1], duration, total_bytes/1000000, bandwidth))
+    print("{}:{}\t0.0 - {:.1f}\t\t{:.0f} {}\t\t{:.2f} Mbps".format(sock.getsockname()[0], sock.getsockname()[1], duration, total_bytes,format, bandwidth))
         
 
 if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjøres, og koden inne i blokken, er det den som skal kjøres. Linjen er brukt for å kjøre koden
@@ -202,18 +212,23 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
     duration=args.time
     parallel=args.parallel
     interval=args.interval
-    #format=args.format
+    format=args.format
    
     if args.server:# basert på dette kaller vi funksjon server()
         check_ip(ip)
-        server (ip,port)
+        
+        server (ip,port,format)
     elif args.client:# basert på dette kaller vi funksjon client()
-        #client(args.serverip,port,duration,parallel,interval) 
-        client(serverip,port,duration,parallel)
-        if parallel in range(1, 6):
-            for i in range(1, parallel):
-                client(args.serverip, port, duration, i)
-                  
+       
+            if parallel in range(2, 6):
+                for i in range(0, parallel):
+                    client_thread = threading.Thread(target=client, args=(args.serverip, port,format, duration, i,))# Vi oppretter en tråd ved hjelp av target og args
+                    client_thread.start()# Starter tråden
+            else:
+                client(serverip,port,format,duration,parallel)
+
+                    
+                    
         
            
            
