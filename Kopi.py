@@ -62,13 +62,6 @@ def handle_client(conn,addr, format):# funksjon for å behandle klienter og mål
         end_time  = time.time()# kaller igjen metode time.time() for å se tiden etter at data er mottatt
         
         duration = end_time - start_time # beregner tiden det tok å motta data, og legger den i variabelen duration
-       
-        
-        #prøv dette for å skrive ut hver femte sek
-        #if duration % 5 == 0
-          #print
-        #skal jeg definere format her?  
-        
         
         try:
             conn.send("ACK".encode())# sender bekreftelsesmelding til klienten
@@ -122,6 +115,7 @@ def server(ip,port,format)  : # Dette er funksjon for å kjøre serveren
 def client(serverip, port, format,duration,parallel):# Dette er funksjon for å kjøre client
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #oppretter ny socket objekt, ved brukt av IPV4-protokoll og TCP protokoll
+    sock.settimeout(1)# Setter timeout til 1 sekund
     sock.connect((serverip, port))# client kobles til server
     print("-" * 45)
     print(" A simpleperf client Client connecting to server {}, port {}".format(serverip, port))# printer ut melding
@@ -151,7 +145,8 @@ def client(serverip, port, format,duration,parallel):# Dette er funksjon for å 
                 
                 
         if elapsed_time >= duration:# dersom medgått tid er større enn duration
-            sock.send("FINISH".encode())# client sender bye medling
+            if data =="FINISH":
+                sock.send(data.encode())# client sender bye medling
             break # Løkken avbrytes
     
         msg= sock.recv(1000).decode()# client tar imot respons (Acknowlegement) fra server på opp til 10 byte
