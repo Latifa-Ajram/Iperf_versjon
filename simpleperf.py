@@ -46,12 +46,8 @@ def handle_client(conn,addr, format):# funksjon for å behandle klienter og mål
 
     while True: # løkken fortsetter å motta data intil det ikke er mer data igjen
         
-        try:
-            data = conn.recv(1000) # 1000 bytes av data blir mottatt fra tilkoblingen og lagres i variabelen data
-        except:
-            break
-       
-        if  data.decode() == "FINISH" : # ikke mer data
+        data = conn.recv(1000) # 1000 bytes av data blir mottatt fra tilkoblingen og lagres i variabelen data
+        if "0" not in data.decode(): # ikke mer data
 
             print(data)    
             break    # Avslutt løkken
@@ -69,8 +65,8 @@ def handle_client(conn,addr, format):# funksjon for å behandle klienter og mål
           #print
         #skal jeg definere format her?  
        
+    print("LOOP OVER")
     conn.send("ACK".encode())# sender bekreftelsesmelding til klienten
-    conn.close()
     bandwidth =( antall_bytes /duration )* 8 /1000000 
     # Dette er overskrift til 4 kolonner , innholdet i disse kommer ut av neste linje  som er info om data som er overført mellom client og server
     if format == "KB":# hvis vi ønsker å representere bW i KB/s
@@ -151,8 +147,7 @@ def client(serverip, port, format,duration,parallel):# Dette er funksjon for å 
             sock.send("FINISH".encode())# client sender bye medling
             break # Løkken avbrytes  (her hørte noen som sa at vi bør ikke vente på ack)
     
-    msg=sock.recv(1000).decode()# client tar imot respons (Acknowlegement) fra server på opp til 10 byte
-    print("data received:",msg)
+    print("LOOP OVER")
     end_time = time.time()# tidspunkt når client er ferdig
     
     duration = end_time - start_time # tiden det tok for client å kjøre/ end_time= nåværende tidspunkt
@@ -225,13 +220,3 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
                 client(serverip,port,format,duration,parallel)
 
                     
-                    
-        
-           
-           
-
-
-        
-            
-
-    
