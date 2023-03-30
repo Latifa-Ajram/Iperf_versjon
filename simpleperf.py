@@ -53,7 +53,7 @@ def handle_client(conn,addr, format):# funksjon for å behandle klienter og mål
        
         if  data.decode() == "FINISH" : # ikke mer data
 
-            print(data)
+            print(data)    
             break    # Avslutt løkken
            
        
@@ -68,15 +68,9 @@ def handle_client(conn,addr, format):# funksjon for å behandle klienter og mål
         #if duration % 5 == 0
           #print
         #skal jeg definere format her?  
-        
-        
-        try:
-            conn.send("ACK".encode())# sender bekreftelsesmelding til klienten
-        except:
-            
-            conn.close()
        
-
+    conn.send("ACK".encode())# sender bekreftelsesmelding til klienten
+    conn.close()
     bandwidth =( antall_bytes /duration )* 8 /1000000 
     # Dette er overskrift til 4 kolonner , innholdet i disse kommer ut av neste linje  som er info om data som er overført mellom client og server
     if format == "KB":# hvis vi ønsker å representere bW i KB/s
@@ -155,10 +149,10 @@ def client(serverip, port, format,duration,parallel):# Dette er funksjon for å 
         if elapsed_time >= duration:# dersom medgått tid er større enn duration
            
             sock.send("FINISH".encode())# client sender bye medling
-            break # Løkken avbrytes  
+            break # Løkken avbrytes  (her hørte noen som sa at vi bør ikke vente på ack)
     
-        msg = sock.recv(1000).decode()# client tar imot respons (Acknowlegement) fra server på opp til 10 byte
-    print ("data received", msg)
+    msg=sock.recv(1000).decode()# client tar imot respons (Acknowlegement) fra server på opp til 10 byte
+    print("data received:",msg)
     end_time = time.time()# tidspunkt når client er ferdig
     
     duration = end_time - start_time # tiden det tok for client å kjøre/ end_time= nåværende tidspunkt
@@ -175,9 +169,8 @@ def client(serverip, port, format,duration,parallel):# Dette er funksjon for å 
         total_bytes = total_bytes / 1000000#Dette konverterer antall byte til megabyte siden 1MB~= 1000000Byte/1048576byte
     elif format == "B":
         total_bytes= total_bytes    
-    print("-" * 45)
+   
     print("Client connected with server {},port{}".format(serverip,port))
-    print("-" * 45)
     print("ID\t\tInterval\t\tTransfer\tBandwidth")
     print("{}:{}\t0.0 - {:.1f}\t\t{:.0f} {}\t\t{:.2f} Mbps".format(sock.getsockname()[0], sock.getsockname()[1], duration, total_bytes,format, bandwidth))
         
