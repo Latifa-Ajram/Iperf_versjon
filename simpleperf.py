@@ -60,10 +60,6 @@ def handle_client(conn,addr, format):# funksjon for å behandle klienter og mål
         duration = end_time - start_time # beregner tiden det tok å motta data, og legger den i variabelen duration
        
         
-        #prøv dette for å skrive ut hver femte sek
-        #if duration % 5 == 0
-          #print
-        #skal jeg definere format her?  
        
     print("LOOP OVER")
     conn.send("ACK".encode())# sender bekreftelsesmelding til klienten
@@ -140,6 +136,7 @@ def client(serverip, port, format,duration,parallel):# Dette er funksjon for å 
                     print("ID Interval Transfer Bandwidth")
                     print("{} {:.1f} - {:.1f} {:.0f} {:.2f}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]),  math.floor(elapsed_time) - interval,math.floor(elapsed_time) , total_bytes/1000000, bandwidth))
                     last_print_time = time.time()
+                
                 
                 
         if elapsed_time >= duration:# dersom medgått tid er større enn duration
@@ -220,3 +217,4 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
                 client(serverip,port,format,duration,parallel)
 
                     
+
