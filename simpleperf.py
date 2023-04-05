@@ -6,6 +6,9 @@ import threading
 import sys
 import math
 
+
+
+
 # Definerer en funksjon for å sjekke om en port er gyldig
 def check_port(val):
     try:
@@ -33,7 +36,8 @@ def check_ip(address):# sjekker om adress er valid IPv4 address
        val = ipaddress.ip_address(address)#  oppretter en 'ip-address'- objekt fra ipaddress-modulen
        print(f"The IP address {val} is valid.")# hvis adressen er en gyldig IPv4-adresse, vil 'val' inneholde dette'ip_address'- objektet og melding skrives ut
     except ValueError:# exception kastes ut dersom adressen ikk er gyldig
-       print(f"The IP address is {address} not valid")# feilmelding skrives ut
+       print(f"The IP address is {address} not valid")# feilmelding skrives ut'
+       
 
 
 def handle_client(conn,addr, format):# funksjon for å behandle klienter og måle båndbredde
@@ -127,14 +131,16 @@ def client(serverip, port, format,duration,parallel):# Dette er funksjon for å 
         if interval:  # sjekker om interval-verdien er satt  
          
                 bandwidth = total_bytes / duration * 8 / 1000000
+                #bandwidth = format_data_volume(total_bytes, format) / duration * 8
                 
-                if now - last_print_time >= interval: # sjekker om det har gått tilstrekkelig tid siden forrige utskrift
-                   
+                #if now - last_print_time >= interval: # sjekker om det har gått tilstrekkelig tid siden forrige utskrift
+                if (now - last_print_time >= interval) or elapsed_time >= duration:   
                     print("Client connected with server {},port{}".format(serverip,port))
                     print("-" * 45)
                     print("ID Interval Transfer Bandwidth")# skriver ut overskrift for info som skal skrives ut
                     # skriver ut info om klientens båndbredde
                     print("{} {:.1f} - {:.1f} {:.0f} {:.2f}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]),  math.floor(elapsed_time) - interval,math.floor(elapsed_time) , total_bytes/1000000, bandwidth))
+                    
                     last_print_time = time.time()
                 
                 
