@@ -9,6 +9,7 @@ import math
 
 
 
+
 # Definerer en funksjon for å sjekke om en port er gyldig
 def check_port(val):
     try:
@@ -131,19 +132,18 @@ def client(serverip, port, format,duration,parallel):# Dette er funksjon for å 
         if interval:  # sjekker om interval-verdien er satt  
          
                 bandwidth = total_bytes / duration * 8 / 1000000
-                #bandwidth = format_data_volume(total_bytes, format) / duration * 8
-                
-                #if now - last_print_time >= interval: # sjekker om det har gått tilstrekkelig tid siden forrige utskrift
-                if (now - last_print_time >= interval) or elapsed_time >= duration:   
+                 
+                if (now - last_print_time >= interval) or elapsed_time >= duration:   # sjekker om det har gått tilstrekkelig tid siden forrige utskrift 
                     print("Client connected with server {},port{}".format(serverip,port))
                     print("-" * 45)
                     print("ID Interval Transfer Bandwidth")# skriver ut overskrift for info som skal skrives ut
                     # skriver ut info om klientens båndbredde
                     print("{} {:.1f} - {:.1f} {:.0f} {:.2f}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]),  math.floor(elapsed_time) - interval,math.floor(elapsed_time) , total_bytes/1000000, bandwidth))
                     
-                    last_print_time = time.time()
+                    last_print_time = time.time()# Oppdaterer last_print_time()
+       
                 
-                
+        
                 
         if elapsed_time >= duration:# dersom medgått tid er større enn duration
            
