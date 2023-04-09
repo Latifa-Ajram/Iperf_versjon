@@ -13,6 +13,9 @@ python3 simpleperf.py -c <ip-adresse> -p < portnummer> -t <varighet> -f <format>
 'ip-adresse' er IP-adressen til enheten der serveren kjører,'portnummer ' er portnummeret som skal brukes for kommunikasjon.
 'varighet' er hvor lenge man ønsker å sende data(måles i sekunder)
 'format' er formatet som man ønsker å få båndbredden i (B,KB eller MB)
+ved å kjøre dette: python3 simpleperf.py -c <ip-adresse> -p < portnummer> -t  vil det skrives ut statistikk per t sekunder spesifisert etter -i- flagget.
+ved å kjøre dette: python3 simpleperf -c -I <server_ip> -p <server_port> -P 2   vil det åpnes to TCP-tilkoblinger parallelt for å koble til serveren
+
 
 Hvordan fungerer programmet?
 
@@ -21,4 +24,4 @@ For å beregne båndbredden, vil tråden telle antall bytes som blir mottatt og 
 
 Krav:
 
-programmet krever at pyhton er installert på datamskinen der du ønsker å kjøre programmet.
+programmet krever at pyhton er installert på datamaskinen der du ønsker å kjøre programmet.
