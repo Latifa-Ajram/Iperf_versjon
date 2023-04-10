@@ -6,6 +6,7 @@ import threading
 import sys
 import math
 from enum import Enum
+from tabulate import tabulate
 import re
 
 
@@ -121,11 +122,12 @@ def client(serverip, port, format,duration,parallel,interval,num):# Dette er fun
     start_time = time.time() # variabelen inneholder nåværende tid når starter å koble seg til server
     total_bytes = 0 # antall byte sendt
     bytes_per_packet = 1000
+    is_first_print = True  # Flag to check if it is the first time printing  
 
     while True: # evig loop som sender datapakker på 1000 byte
-        data = "0" *  bytes_per_packet# varaibel data settes til en streng av 1000 nuller
+        data = "0" *  bytes_per_packet # varaibel data settes til en streng av 1000 nuller
         if num and num - total_bytes < bytes_per_packet:
-            data = "0" * (num-total_bytes)
+            data = "0" * int(num-total_bytes)
 
         sock.send(data.encode())# sender datapakker
         total_bytes += len(data) # vi oppdaterer antall byte for hver pakke som blir sendt
@@ -136,18 +138,21 @@ def client(serverip, port, format,duration,parallel,interval,num):# Dette er fun
        
         if interval:  # sjekker om interval-verdien er satt  
          
-                bandwidth = total_bytes / duration * 8 / 1000000
-                 
-                if (now - last_print_time >= interval) or elapsed_time >= duration:   # sjekker om det har gått tilstrekkelig tid siden forrige utskrift 
-                    print("Client connected with server {},port{}".format(serverip,port))
-                    print("-" * 45)
-                    print("ID Interval Transfer Bandwidth")# skriver ut overskrift for info som skal skrives ut
-                    # skriver ut info om klientens båndbredde
-                    print("{} {:.1f} - {:.1f} {:.0f} {:.2f}Mbps".format(sock.getsockname()[0]+":"+str(sock.getsockname()[1]),  math.floor(elapsed_time) - interval,math.floor(elapsed_time) , total_bytes/1000000, bandwidth))
+            headers = ['ID', 'Interval', 'Transfer', 'Bandwith'] 
                     
-                    last_print_time = time.time()# Oppdaterer last_print_time()
-       
-                
+            if (now - last_print_time >= interval) or (elapsed_time >= duration and math.floor(elapsed_time) % interval == 0):
+                   
+                    bandwidth = total_bytes / duration * 8 / 1000000
+                    if is_first_print:
+                        print(tabulate([], headers=headers))
+                        is_first_print = False
+                    
+                    result = [[sock.getsockname()[0]+":"+str(sock.getsockname()[1]), f"{math.floor(elapsed_time) - interval:.1f}-{math.floor(elapsed_time):.1f}", f"{(total_bytes/1000000):.2f} {format.title()}", f"{bandwidth:.2f} {format.title()}ps"]]
+
+                    print(tabulate(result))
+
+                    last_print_time = time.time() 
+                    
         
                 
         if elapsed_time >= duration:# dersom medgått tid er større enn duration
@@ -239,6 +244,3 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
                     client_thread.start()# Starter tråden
             else:# hvis verdien av'parllel' ikke ligger mellom 2 og 5 ,opprettes en enkelt tilkobling til serveren og kaller client funksjon
                 client(serverip,port,format,duration,parallel,interval,num)
-
-                    
-
