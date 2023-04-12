@@ -15,7 +15,7 @@ class VolumeFormat(Enum):
     KB = 1000
     MB = 1000000
 
-#Definerer em funksjon for å regne om datavolum. Denne tar utgangspunkt i at vi behandler datamengden i bytes i resten av koden vår.
+#Definerer en funksjon for å regne om datavolum. Denne tar utgangspunkt i at vi behandler datamengden i bytes i resten av koden vår.
 def format_data_volume(data_volume_bytes, fmt):
     return data_volume_bytes / VolumeFormat[fmt].value
 
@@ -222,7 +222,7 @@ if __name__ == '__main__':# sjekker navnet på det gjeldende programmet som kjø
         # Splitter num-argumentet i tallet og enheten
         num_value, num_unit = re.match(r"^(\d+\.?\d*)(B|KB|MB)$", args.num.upper()).groups()
         num_value = float(num_value) # konvertering til flyttall-verdi
-        num = num_value * VolumeFormat[num_unit].value #convert to bytes
+        num = num_value * VolumeFormat[num_unit].value #convert til bytes
 
     if args.server:# basert på dette kaller vi funksjon server()
         check_ip(ip)# kalles fuksjon for å sjekke om IP-adressen git er gyldig
